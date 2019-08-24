@@ -1,0 +1,96 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel} \usepackage{hyperref} \usepackage{float}
+\usepackage[utf8]{inputenc} \usepackage{amsmath} \usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes} \usepackage{tikz}
+\usepackage{pdfpages} \usepackage{listings}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{green}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{green},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\usetikzlibrary{arrows,positioning,shapes.geometric}
+
+\title{Dynamic A* on \emph{GPU}}
+\usepackage{listings}
+\usepackage{color}
+
+
+\author{\normalsize By: Lokesh Koshale (CS15B049) \\\normalsize}
+
+\date{\color{black}August 24 2019}
+
+\begin{document} \maketitle
+
+\section{Abstract}
+Manipulate a LED sounds pretty simple when you do it by analog logic, or digital logic. But when you need to communicate the software and hardware, and from the user space to Kernel space is much more complicated, there are restrictions that the software have to protect the hardware. So we need to create a new driver to communicate the user space and the Kernel space because we need to manipulate the GPIO, in this case plugged to a LED. We need this to set the instructions for the LED to blink, turn on, turn off and set the PWM time and duty cycle.
+
+\section{Introduction}
+This report covers the solution of the final project of the Operating System course, this project approaches us more to the practical functionality of some topics learned at the course. And let us to define a more clear line between the different kinds of drivers (Char, Block, and Network). Implementing and using one of them (char driver), to solve the problem proposed below.
+The purpose of this paper is to present a solution to the LED problem, using a driver on a RaspberryPi 2, we will use systemcalls as the communication from user space to kerne space to use the GPIO that we need to turn on/off the LED.
+
+\section{Theoretical Framework}
+
+There are a lot of documentation about turn on a LED but with high level language, but there are few documents talking about the Kernel and how to manipulate it in comparison.
+Implement in a Linux Embedded board (RaspberryPi2) a char driver able to control a GPIO, the challenge was no using any high level language like python or C++, neither their libraries that simplify the GPIO handling. The solution includes libraries with basic functions to drive high or low the output of an onboard pin. An application of this library needs to be presented to prove the proper functioning of the char driver. 
+
+\section{Objective}
+
+The main objective of this work will be to prove that a LED can be manipulated with out the use of a high level language and with out libraries, just using a char driver to control a GPIO.
+
+\section{Justification}
+
+This project was developed for learning purpose, the need for more knowledge about the Kernel and drivers. We can actually see the effects of a driver working physically by manipulating the software and watching the performance on a LED.
+
+\section{Development}
+
+First we need a Kernel and its headers, we found a lot of problems because our Kernel version doesn't match with our headers version. When we try to run our driver there was a lot of error about the libraries, so that was our first problem. We solved it matching the Kernel version with the headers version, it was a little bit complicated because we didn't find both of them that fast.  
+
+
+\section{Solution}
+
+A char driver was implemented as a loadable Kernel module, since it’s a driver a node needs to be created in order to transmit information between the application and the driver. An option to transmit information to this driver is trough user space using commands like “echo” to channel a string into the driver’s node. The other way is using a library that we made using system calls like “write” to change the value of the GPIO inside of the application.
+
+\section{Conclusion}
+Kernel versions and Kernel headers must match for a module to build. We actually see a working char driver and also how to communicate an application with a Kernel module. Currently the PWM mode is not exact, because we don’t use a high definition timer. The PWM mode is implemented in a blocking fashion. If we have more time, we surely can implement more precise timers and tools like alarms to avoid the blocking implementation that is actually running. 
+\section{References}
+
+\begin{thebibliography}{} 
+    
+    \bibitem{Git}https://github.com/Aribababa/Sistemas-Operativos
+        
+
+\end{thebibliography}
+
+
+% All reduce Graphs
+\newpage 
+    \section{Appendix} 
+ 
+Manipulate a LED sounds pretty simple when you do it by analog logic, or digital logic. But when you need to communicate the software and hardware, and from the user space to Kernel space is much more complicated, there are restrictions that the software have to protect the hardware. So we need to create a new driver to communicate the user space and the Kernel space because we need to manipulate the GPIO, in this case plugged to a LED. We need this to set the instructions for the LED to blink, turn on, turn off and set the PWM time and duty cycle.
+
+Code for the driver
+\begin{lstlisting}
+code
+\end{lstlisting}
+
+\end{document}
