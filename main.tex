@@ -271,8 +271,19 @@ procedure: check_cycle(node,parent):
     return false
 \end{lstlisting}
 
-The propagation for deletion handling all the above cases is given below: 
+\subsection{Parallel Deletion and Cycle}
+When there are multiple deletions happening at same time, there can be cycle of optimal\_parent, and thus when we do the above check, we get into an infinite loop also we defined optimal\_parent as a non cyclic path to start node. To eliminate such cycle when we process deletion we have to do additional processing of removing such cycles.\\
 
+
+\begin{center}
+\includegraphics[scale=0.45]{img/Delete_cycle.png}        
+\end{center}
+In the example graph given above, the Optimal Path from $S\rightarrow D$ is $SABCD$,when we delete edges $A \rightarrow B$ and $G \rightarrow F$,for node $B$ the new parent is $I$ as $B \notin optimal\_parents(I)$, also the new parent of $F$ becomes $E$ as $E \notin optimal\_parents(F)$ this is because we are checking for optimal\_parent for both nodes in parallel thus the check happens at the same time and both reads the optimal\_parent values before it gets changed by either one of them. Thus forming a cycle of optimal\_parents which violates our definition of optima\_parent, to solve this we perform additional cycle check after each iteration of propagation for deletion and if such cycle found we remove them.\\
+Now the question arises to remove which newly formed edge of the cycle i.e remove $I= $optimal\_parent($B$) or remove $E=$ optimal\_parent($F$). which one belongs to the optimal path? the answer is we can just remove any of cycle edges and our propagation algorithm will take care of which edge actually belong to the cycle.\\
+
+%explain HOW
+
+The propagation for deletion handling all the above cases is given below:
 \begin{lstlisting}[language=python, caption=Propagation of Deletions]
 procedure: propagate_deletions( list< pair<u,v> > Deletions, E, N):
      update_list = make_update_list(Deletions);
@@ -313,7 +324,32 @@ procedure: expand(update_list,s,flag):
 
 %explanation about why we need A* after this.
 \section{Fully Dynamic}
-Real world graphs are dynamic and edges are changing continuously so there are insertion of edges and deletion of edges at same instance in such cases if a query arrives to find the optima path from source to destination we can retrieve the optimal path without re-executing A* from start again. We have designed the propagation of Insertion( section 4) and propagation of deletions (section 5) such that they can be overlapped and we can process both insertion and deletion at same time by considering them as an update.
+Real world graphs are dynamic and edges are changing continuously so there are insertion of edges and deletion of edges at same instance in such cases if a query arrives to find the optima path from source to destination we can retrieve the optimal path without re-executing A* from start again.
+
+\subsection{Separate Propagation }
+
+
+
+
+\subsection{Simultaneous Propagation}
+We have designed the propagation of Insertion( section 4) and propagation of deletions (section 5) such that they can be overlapped and we can process both insertion and deletion at same time by considering them as an update.
+
+\subsubsection{Insert-Delete Cycle}
+Since we have insertions and deletions propagating at same time, If we don't perform enough checks we can get into cycles for certain cases. 
+\begin{center}
+\includegraphics[scale=0.45]{img/ins_del_cycle.png}        
+\end{center}
+In the example graph given above we remove $A \rightarrow B$ and insert $F \rightarrow B$, Due to deletion $f(B) = \infty$, when we propagate for edge $F \rightarrow B$,the cost of reaching $B$ from $F$ via newly added edge is less than infinity thus, we compute the new cost and make optimal\_parent($B$) = $F$,But when we try to to retrace the path from $F$ to $S$ we get $F\rightarrow E\rightarrow C\rightarrow B\rightarrow F...$ thus we have a optimal\_parent cycle. It is because the cost of $F$ itself is a stale value due to the fact that its cost is computed wrt to $B$ and deleted edge $A \rightarrow B$. To remove such cases we have to extensively check for insertion of edges $u \rightarrow v$, if $v \in $optimal\_parents($u$) for all insertions.\\
+
+\subsubsection{Propagation Cycle}
+Since Insertions and Deletions are propagating at same if there is cycle and each the reach the cycle at diff iterations, It might happen due to structure of graph that they propagate indefinitely on such cycles if the check mentioned in the above section is not implemented for each insertion.  
+
+\begin{center}
+\includegraphics[scale=0.45]{img/prop_cycle.png}        
+\end{center}
+
+In the example above $A \rightarrow B$ is deleted and $E \rightarrow F$ is added. Due to deletion cost of $B = \infty$  and due to insertion cost of $F$ is changed in next iteration cost of $C = \infty$ as there is no path from $S \rightarrow C$ in new graph, also due to edge $f \rightarrow B$ the cost of $B$ is changed as the new cost is less than $\infty$. In the next iteration cost of $E = \infty$ and cost of $C$ is changed ,Similarly in next iteration cost of $F = \infty$ and cost of $E$ is changed, and similarly the propagation goes on the loop indefinitely. The problem here is we computed cost of $B$ from $F$ when $F$ has the stale value and its cost is computed wrt $B$ itself. This can be removed by doing check mentioned in above section 4.2.1. 
+
 \begin{lstlisting}[language=python, caption=Propagation of Updates]
 procedure: propagate_updates( list< pair<u,v> > Deletions,list< pair<u,v> > Inserts, E, N):
      update_list = make_update_list_insertion(Inserts);
@@ -355,6 +391,25 @@ procedure: expand(update_list,s,flag):
 
 \section{Experimental Results}
 %results
+
+
+
+
+
+\begin{center}
+\includegraphics[scale=0.45]{img/RvK.png}        
+\end{center}
+
+
+\begin{center}
+\includegraphics[scale=0.45]{img/IvK.png}        
+\end{center}
+
+
+
+\begin{center}
+\includegraphics[scale=0.45]{img/IDvK.png}        
+\end{center}
 
 \section{Related Work}
 %write about D* D* lite
