@@ -6,6 +6,6 @@
     - add implementation details PQ, update etc
     
     
-proof insertion:
-    if new path: we have same path
-    no new path: we have old path
+# add
+    - fig and lemma citation 
+    - fig labeling
