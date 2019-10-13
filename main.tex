@@ -6,6 +6,7 @@
 \usepackage{pdfpages} \usepackage{listings}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{framed,enumitem}
 
 
 
@@ -23,13 +24,13 @@
   basicstyle={\small\ttfamily},
   numbers=left,
   numberstyle=\tiny\color{gray},
-  keywordstyle=\color{blue},
   commentstyle=\color{green},
   stringstyle=\color{mauve},
   breaklines=true,
   breakatwhitespace=true,
   tabsize=3
 }
+% add above keywordstyle=\color{blue},
 
 \lstset{emph={%  
     for%
@@ -185,13 +186,16 @@ In Incremental setting there are only edge-insertions, i.e edge $u \rightarrow v
 In the above graph the Optimal Path before insertion was $S \rightarrow M \rightarrow R \rightarrow D$, when we insert edge $S \rightarrow D$, the cost $f$ of node $R$ changes and Optimal Path changes to $S \rightarrow R \rightarrow D$.\\
 \\
 \hypertarget{Lemma 2}{\textbf{Lemma 2:}} \textit{Insertion of an edge can not increase the cost of source to destination Optimal Path.}\\
-\textbf{Proof:} Suppose we add and an edge $u \rightarrow v $ with weight $w_{uv}$ where $u \in V$ and $v \in V$. The cost of reaching $v$ from source using edge $u \rightarrow v$ is $g(v)_{new} = g(u) + w_{uv}$. There can be two cases:\\
-\textit{Case 1:} If $g(v)_{new} < g(v)$, if optimal path consist of node $v$ then the decrease of cost of $v$ will decrease the cost of Optimal Path, as if there is path from $v$ to destination then source $\rightarrow v \rightarrow$ destination path's cost decreases due to decrease in optimal cost of $v$ thus it becomes the new Optimal Path with lesser cost. if it doesn't then the Optimal Path remains same.\\
-\textit{Case 2:} If $g(v)_{new} \geq g(v)$,  Suppose node $v$ is our destination, from definition Optimal Path is a path with least cost associated with it, so the optimal cost to reach $v$ is $g(v)$, so the addition of this edge has no affect on cost of any node of graph which implies the cost of Optimal Path remains same.\\
+\textbf{Proof:} Suppose we add and an edge $u \rightarrow v $ with weight $w_{uv}$ where $u \in V$ and $v \in V$. The cost of reaching $v$ from source using edge $u \rightarrow v$ is $g(v)_{new} = g(u) + w_{uv}$. There can be two cases:
+\begin{itemize}[label={}]
+    \item \textit{Case 1:} If $g(v)_{new} < g(v)$, if optimal path consist of node $v$ then the decrease of cost of $v$ will decrease the cost of Optimal Path, as if there is path from $v$ to destination then source $\rightarrow v \rightarrow$ destination path's cost decreases due to decrease in optimal cost of $v$ thus it becomes the new Optimal Path with lesser cost. if it doesn't then the Optimal Path remains same.
+    
+    \item \textit{Case 2:} If $g(v)_{new} \geq g(v)$,  Suppose node $v$ is our destination, from definition Optimal Path is a path with least cost associated with it, so the optimal cost to reach $v$ is $g(v)$, so the addition of this edge has no affect on cost of any node of graph which implies the cost of Optimal Path remains same.
+\end{itemize}
 In both cases cost of Optimal Path doesn't increase, Hence Proved\\
 \\
 \hypertarget{Lemma 3}{\textbf{Lemma 3:}} \textit{If we add an edge $u \rightarrow v$ and $f(u) > f(destination)$ then addition of this edge will not affect the Optimal Path.}\\
-\textbf{Proof:}Given  $f(destination) < f(u)$, As weights are positive $w_{uv} > 0$ so cost of any such path from source $\rightarrow u \rightarrow v \rightarrow$ destination will be $g(u) + $ cost of reaching destination from $u$ but as $g(u) > g(destination)$ the cost of such paths will always be larger and hence it can't be the Optimal Path so the addition of such edges doesn't affect the Optimal Path.\\   
+\textbf{Proof:} Given  $f(destination) < f(u)$, As weights are positive $w_{uv} > 0$ so cost of any such path from source $\rightarrow u \rightarrow v \rightarrow$ destination will be $g(u) + $ cost of reaching destination from $u$ but as $g(u) > g(destination)$ the cost of such paths will always be larger and hence it can't be the Optimal Path so the addition of such edges doesn't affect the Optimal Path.\\   
 \textbf{corollary:} \textit{If If we add an edge $u \rightarrow v$ and $f(u) = \infty$ then addition of this edge will not affect the optimal path.}\\
 \textbf{Proof:} If $f(u) = \infty$ then $f(u) > f(destination)$ so it follows from \hyperlink{Lemma 3}{\textit{Lemma 3}}  that addition of such edges doesn't affect the optimal path.\\
 \\
@@ -228,15 +232,14 @@ procedure: expand(update_list,s,flag):
 
 
 \end{lstlisting}
-
 At the end of propagation if there is change in optimal cost then it would also be propagated to the destination node we prove the same below.\\
 \\
 \hypertarget{Lemma 4}{\textbf{Lemma 4:}}\textit{At the end of propagation all the nodes $\in V$ have latest cost $f$ which is optimal cost in new graph including inserts.}\\
-\textbf{Proof:} Suppose we insert edge $u \rightarrow v$. Lets take a node $n \in$ Graph.\\
-\textit{Case 1:} If $n \in$ sub-graph($v$), since $v \in$ update list and at each iteration we add nodes which belongs to sub-graph of $v$ and whose $f(n)$ is decreased. According to \hyperlink{Lemma 2}{\textit{Lemma 2}} Insertion can only decrease the cost, so if $n \in$ update list at some iteration then its $f(n)$ is decreased and that is the new optimal cost $f(n)$, If $n \notin$ update list then $f(n)_{new}$ due to insertion is greater than $f(n)_{old}$ in which case $f(n)_{old}$ is the optimal cost as per the definition of optimal cost.\\
-\textit{Case 2:} If $n \notin$ sub-graph($v$) which implies that there can be no change in the optimal\_path from source to $n$ (as there is no structural change in this part of graph), thus it's cost remains unchanged and which is the optimal cost of node $n$ in new graph.
-\\
-\\
+\textbf{Proof:} Suppose we insert edge $u \rightarrow v$. Lets take a node $n \in$ Graph.
+\begin{itemize}[label={}]
+    \item \textit{Case 1:} If $n \in$ sub-graph($v$), since $v \in$ update list and at each iteration we add nodes which belongs to sub-graph of $v$ and whose $f(n)$ is decreased. According to \hyperlink{Lemma 2}{\textit{Lemma 2}} Insertion can only decrease the cost, so if $n \in$ update list at some iteration then its $f(n)$ is decreased and that is the new optimal cost $f(n)$, If $n \notin$ update list then $f(n)_{new}$ due to insertion is greater than $f(n)_{old}$ in which case $f(n)_{old}$ is the optimal cost as per the definition of optimal cost.
+    \item \textit{Case 2:} If $n \notin$ sub-graph($v$) which implies that there can be no change in the optimal\_path from source to $n$ (as there is no structural change in this part of graph), thus it's cost remains unchanged and which is the optimal cost of node $n$ in new graph.
+\end{itemize}
 \hypertarget{Lemma 5}{\textbf{Lemma 5:}}\textit{At the end of propagation $f(destination)$ is the optimal cost of reaching destination from $source$ in the new graph G(V, E+Inserts ).}\\
 \textbf{Proof:} Follows from \hyperlink{Lemma 4}{\textit{Lemma 4}}, $destination \in V$, so at the end of propagation $f(destination)$ is the optimal cost i.e optimal cost of reaching $destination$ from $source$ in new graph including inserts i.e G(V, E+Inserts )\\
 \\
@@ -248,28 +251,33 @@ In Decremental setting there are only removal of edges $u \rightarrow v$ where $
 \end{center}
 In the above graph the Optimal Path before deletion was $S \rightarrow R \rightarrow D$, when we delete the edge $S \rightarrow R$, the Optimal Path changes to $S \rightarrow M \rightarrow R \rightarrow D$.\\
 Below we prove some important properties that holds when we remove edges from graph. The following properties holds when we have the Optimal Path for the graph before deletions.\\
+\\
 \hypertarget{Lemma 6}{\textbf{Lemma 6:}} \textit{Deletion of edge $ u \rightarrow v$ where $u \in V$ and $v \in V$ can not decrease $f(v)$.}\\
-\textbf{Proof:} Let edge $ u \rightarrow v$ gets deleted from graph then,\\
-\textit{Case 1:} If $u =$ optimal\_parent($v$) then, source $\rightarrow u \rightarrow v$ was the optimal path of reaching $v$ from source, So after deletion, $f(v)_{new} = g(s) + w_{sv} + h(v)$ where $s$ is parent of $v$ with least $g$, In A* we chose the path with least $f$ as we chose $u$ before $s$ implies $f(v)_{new} \geq f(v)_{old}$.\\
-\textit{Case 2:} If $u$ is  not the optimal\_parent($v$), then let $s$ be the optimal\_parent($v$), deletion of edge $u \rightarrow v$ doesn't affect the $f(v)$ as the least cost of reaching $v$ is from $s$.\\
+\textbf{Proof:} Let edge $ u \rightarrow v$ gets deleted from graph then,
+\begin{itemize}[label={}]
+    \item \textit{Case 1:} If $u =$ optimal\_parent($v$) then, source $\rightarrow u \rightarrow v$ was the optimal path of reaching $v$ from source, So after deletion, $f(v)_{new} = g(s) + w_{sv} + h(v)$ where $s$ is parent of $v$ with least $g$, In A* we chose the path with least $f$ as we chose $u$ before $s$ implies $f(v)_{new} \geq f(v)_{old}$.\\
+    
+    \item \textit{Case 2:} If $u$ is  not the optimal\_parent($v$), then let $s$ be the optimal\_parent($v$), deletion of edge $u \rightarrow v$ doesn't affect the $f(v)$ as the least cost of reaching $v$ is from $s$.\\
+\end{itemize}
 From above we can say that deletion of edge $u \rightarrow v$ can only increase $f(v)$. Hence Proved.\\
 \\
 \hypertarget{Lemma 7}{\textbf{Lemma 7:}} \textit{If edge($u,v$) $\notin$ Optimal Path, then deletion of such edges doesn't affect the Optimal Path.}\\
 \textbf{Proof:} Suppose we delete edge($u,v$) $\notin$ Optimal Path then, as from \hyperlink{Lemma 6}{\textit{Lemma 6}} deletion of such edges can only increase $f(v)$ so if there is a path from source $\rightarrow v \rightarrow$ destination then it's cost will be increased, as Optimal Path is least cost path such paths cannot be an Optimal Path, Hence deletion of such edges doesn't affect the Optimal Path.\\
 \\
 \hypertarget{Lemma 8}{\textbf{Lemma 8:}}\textit{If edge(u,v) is deleted and optimal\_parent(v)$\neq$u, then deletion of such edges doesn't affect the Optimal Path.}\\
-\textbf{Proof:} If $u$ is  not the optimal\_parent($v$), then let $s =$ optimal\_parent($v$), deletion of edge $u \rightarrow v$ doesn't affect the $f(v)$ as the least cost of reaching $v$ is from $s$, as there is no change in cost of any nodes so Optimal Path remains same.\\
+\textbf{Proof:} If $u$ is  not the optimal\_parent($v$), then let $s =$ optimal\_parent($v$), deletion of edge $u \rightarrow v$ doesn't affect the $f(v)$ as the least cost of reaching $v$ is from $s$, as there is no change in cost of any nodes so Optimal Path remains same.
 
 \subsection{Batch Deletion}
 Instead of deleting edges one by one we process deletion in batches, where a batch contains all the deleted edges before an query. From \hyperlink{Lemma 6}{\textit{Lemma 6}} we know that deletion of edges can increase the optimal cost, to compute the new optimal cost, we first propagate the change in cost due to deletion of edges to all affected nodes and then we perform a check so that we  are not violating the \hyperlink{Lemma 1}{\textit{Lemma 1}} after propagation, which is a essential property to always hold so that later we can process the next incoming updates, if it violates \hyperlink{Lemma 1}{\textit{Lemma 1}} then we start A* from where we left before i.e using the open\_list we have computed before. At the end we will have the new Optimal Path with the optimal cost for new graph encompassing all the deletions.\\
 \\
-\textit{Propagation for Deletion:}\\
-\textit{1.} For each deleted edge $u \rightarrow v$, if $f(v) \neq \infty$ and optimal\_parent($v$)$=u$ then for such edges we compute the cost of reaching $v$ from its parent's and chose the least one as optimal\_parent($v$) and update $f(v)$, if $v$ doesn't have any parent then $f(v)=\infty$, and we add $v$ to update\_list.\\
-\\\textit{2.} For each child of nodes in update\_list, we compute the cost $f$ of child with respect to node and If new cost $f$ is more than $f(child)$ and optimal\_parent(child)  is node
-     then,we compute the cost of reaching child from all of its parents and update $f$ to the least cost of the parents and set that parent as optimal\_parent. And we add child to next update\_list.\\
- \\  
-\textit{3.} We repeat step 1 and 2 until update\_list is empty.\\
-\\
+\textit{Propagation for Deletion:}
+\begin{enumerate}
+    \item For each deleted edge $u \rightarrow v$, if $f(v) \neq \infty$ and optimal\_parent($v$)$=u$ then for such edges we compute the cost of reaching $v$ from its parent's and chose the least one as optimal\_parent($v$) and update $f(v)$, if $v$ doesn't have any parent then $f(v)=\infty$, and we add $v$ to update\_list.
+    
+    \item For each child of nodes in update\_list, we compute the cost $f$ of child with respect to node and If new cost $f$ is more than $f(child)$ and optimal\_parent(child)  is node then,we compute the cost of reaching child from all of its parents and update $f$ to the least cost of the parents and set that parent as optimal\_parent. And we add child to next update\_list.
+    
+    \item We repeat step 1 and 2 until update\_list is empty.
+\end{enumerate}
 Optimal Cost is least cost of reaching the node but we increase the cost of child at step 2 in above procedure, why we do that is because from \hyperlink{Lemma 6}{\textit{Lemma 6}} we know that $f$ might increase due to deletion of edges and we need to propagate the updated higher cost. Also since there is no special ordering of nodes to execute the propagation it may happen that while we propagating for a node its sub-graph might already have been updated so to make sure we have latest cost value among those, we choose the least cost parent and then propagate that cost downwards if applicable.\\ 
 \begin{center}
 \includegraphics[scale=0.45]{img/Delete1.png}    
@@ -277,7 +285,6 @@ Optimal Cost is least cost of reaching the node but we increase the cost of chil
 In above example the Optimal Path before deletion is $S \rightarrow M \rightarrow O \rightarrow P \rightarrow R \rightarrow D $.
 The edges $ M \rightarrow O$ and $P \rightarrow R$ are deleted from graph. So $R,O \in $ update\_list, While propagating for $O$ we might find $R$ again from path $O \rightarrow R$ but $R$ has already updated, if in that update $R$ has chosen path $S \rightarrow M \rightarrow O \rightarrow R$ as its Optimal Path then we have stale value for $f(R)$ as $M \rightarrow O$ is deleted but since $R$'s update happened first it read the stale value before propagation. In such cases we need to find the parent with least cost thus we compute the cost of reaching node from all its parent and choose the parent with least cost as optimal\_parent.
 
- 
 \subsection{Deletion and Cycles}
 We propagate the deletions so that each node whose cost is already computed will have the latest value. There is a special case of deletions with cycle where even after propagation we can get stale value if we don't perform  certain checks while propagating latest value to nodes. as given in example below:
 \begin{center}
@@ -331,18 +338,24 @@ procedure: expand(update_list,s,flag):
     
     for each child ch of node:
         lock(ch)
+        
         if f(ch) > g(node) + weight(node,ch) + h(ch):
             f(ch) = g(node) + weight(node,ch) + h(ch)  
             optimal_parent[ch] = node
             flag[ch] = 1
+        
         else if f(ch) < g(node) + weight(node,ch) + h(ch) and optimal_parent[ch] == node:
             for all parents p of ch:
+            
                 if check_cycle(ch,p) == true:
                     continue
+            
                 if f(ch) > g(p) + weight(p,ch) + h(ch):
                     f(ch) = g(p) + weight(p,ch) + h(ch)
                     optimal_parent[ch] = p
+            
             flag[ch] = 1
+        
         unlock(ch)
         
 \end{lstlisting}
@@ -383,7 +396,7 @@ Real world graphs are dynamic and edges are changing continuously so there are i
 
 \subsection{Separate Propagation }
 As we have already discussed how to find the optimal path when edges are either added only or deleted only we can infer the dynamic change in edges at a single instance as addition happening first then deletion or vice versa. So we process addition first as insertion only then we process deletion as deletion only. It may happen that some nodes will get updated multiple times in two different propagation. But as insertion and deletion require different set of instruction it is a good choice to separate the propagation.
-\begin{lstlisting}[language=python, caption=Manage Deletions]
+\begin{lstlisting}[language=python, caption=Separate Propagation]
 procedure: separate_propagation(list< pair<u,v> > inserted_edges,list< pair<u,v> > deleted_edges,N,E)
     propagate_insertions(inserted_edges,N,E)
     propagate_deletions(deleted_edges,N,E)
@@ -434,19 +447,24 @@ procedure: expand(update_list,s,flag):
     
     for each child ch of node:
         lock(ch)
+        
         if f(ch) > g(node) + weight(node,ch) + h(ch):
             f(ch) = g(node) + weight(node,ch) + h(ch)  
             optimal_parent[ch] = node
             flag[ch] = 1
+        
         elif f(ch) < g(node) + weight(node,ch) + h(ch) and optimal_parent[ch] == node:
-            
             for all parents p of ch:
+             
                 if check_cycle(ch,p) == true:
                     continue
+             
                 if f(ch) > g(p) + weight(p,ch) + h(ch):
                     f(ch) = g(p) + weight(p,ch) + h(ch)
                     optimal_parent[ch] = p
+            
             flag[ch] = 1
+        
         unlock(ch)
 \end{lstlisting}
 
@@ -485,7 +503,7 @@ D*\cite{original D*}, focused D*\cite{focused D*} and D* lite\cite{D* Lite} are 
 
 \section{Conclusion and Future Work}
 We have proposed algorithm which can efficiently find optimal path with the help of heuristics on GPU while taking account for updates in form of insertion and deletions with time. Our algorithm is faster than doing repeated A* on GPU from scratch. We also found that insertions takes less time to process than deletion. And due to the fact that both insertion and deletion requires different set of instruction to process, separate propagation outperforms simultaneous propagation.\\
-In future the possibility of Dynamic A* in multi-GPU environment can also be explored. There can be algorithmic development in dynamic bi-directional A* on GPU. 
+In future the possibility of Dynamic A* in multi-GPU environment can also be explored. There can be algorithmic development in dynamic bi-directional A* on GPU. \newpage
 \begin{thebibliography}{} 
     \bibitem{A*} Hart, P.; Nilsson, N.; Raphael, B. (1968), "A Formal Basis for the Heuristic Determination of Minimum Cost Paths", IEEE Trans. Syst. Science and Cybernetics
     \bibitem{original D*}Stentz, Anthony (1994), "Optimal and Efficient Path Planning for Partially-Known Environments", Proceedings of the International Conference on Robotics and Automation
