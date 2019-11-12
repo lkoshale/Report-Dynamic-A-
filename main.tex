@@ -7,7 +7,8 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{framed,enumitem}
-
+\usepackage{float}
+\usepackage{subcaption}
 
 
 \definecolor{green}{rgb}{0,0.6,0}
@@ -70,6 +71,9 @@
 
 \section{Introduction}
 A*\cite{A*}\cite{Wiki A*} is one of widely used path planning and shortest path approximation algorithm. It is used widespread due to its performance and accuracy. It is used to find shortest path in maps and games where hindrances can be present. In most of the real life cases graph is not static but it is constantly changing. D*\cite{original D*}, focused D*\cite{focused D*} and D* lite\cite{D* Lite} are a family of informed incremental search algorithm where edge cost can change while we try to find the optimal path. Here we approach the problem where edges can be inserted OR deleted from the graph while the number of nodes are fixed. We assume that graph doesn't change while we are finding the optimal path.\\
+
+
+\section{Background}
 
 \begin{lstlisting}[language=C , caption=A*\cite{A*} ]
 Input: A Graph(V,E) with source node (*@\textit{start}@*) and goal node (*@\textit{end}@*).
@@ -178,12 +182,14 @@ hence proved.\\
 \textbf{corollary:}\textit{If some nodes are not visited at the end of A* then the optimal cost of all those node will be greater than or equal to the cost of destination. }
 
 \section{Incremental}
-In Incremental setting there are only edge-insertions, i.e edge $u \rightarrow v $ is added in G where $u\in V $ and $v \in V$.\\
-\\
-\begin{center}
+In Incremental setting there are only edge-insertions, i.e edge $u \rightarrow v $ is added in G where $u\in V $ and $v \in V$.
+\begin{figure}[h!]
+    \centering
     \includegraphics[scale=0.4]{img/insert1.png}
-\end{center}
-In the above graph the Optimal Path before insertion was $S \rightarrow M \rightarrow R \rightarrow D$, when we insert edge $S \rightarrow D$, the cost $f$ of node $R$ changes and Optimal Path changes to $S \rightarrow R \rightarrow D$.\\
+    \caption{}
+    \label{fig:insert_graph}
+\end{figure}\\
+In the above graph[\ref{fig:insert_graph}] the Optimal Path before insertion was $S \rightarrow M \rightarrow R \rightarrow D$, when we insert edge $S \rightarrow D$, the cost $f$ of node $R$ changes and Optimal Path changes to $S \rightarrow R \rightarrow D$.\\
 \\
 \hypertarget{Lemma 2}{\textbf{Lemma 2:}} \textit{Insertion of an edge can not increase the cost of source to destination Optimal Path.}\\
 \textbf{Proof:} Suppose we add and an edge $u \rightarrow v $ with weight $w_{uv}$ where $u \in V$ and $v \in V$. The cost of reaching $v$ from source using edge $u \rightarrow v$ is $g(v)_{new} = g(u) + w_{uv}$. There can be two cases:
@@ -243,13 +249,15 @@ At the end of propagation if there is change in optimal cost then it would also 
 \hypertarget{Lemma 5}{\textbf{Lemma 5:}}\textit{At the end of propagation $f(destination)$ is the optimal cost of reaching destination from $source$ in the new graph G(V, E+Inserts ).}\\
 \textbf{Proof:} Follows from \hyperlink{Lemma 4}{\textit{Lemma 4}}, $destination \in V$, so at the end of propagation $f(destination)$ is the optimal cost i.e optimal cost of reaching $destination$ from $source$ in new graph including inserts i.e G(V, E+Inserts )\\
 \\
-
 \section{Decremental}
-In Decremental setting there are only removal of edges $u \rightarrow v$ where $u \in V$ and $v \in V$.\\
-\begin{center}
-\includegraphics[scale=0.4]{img/Delete2.png}    
-\end{center}
-In the above graph the Optimal Path before deletion was $S \rightarrow R \rightarrow D$, when we delete the edge $S \rightarrow R$, the Optimal Path changes to $S \rightarrow M \rightarrow R \rightarrow D$.\\
+In Decremental setting there are only removal of edges $u \rightarrow v$ where $u \in V$ and $v \in V$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{img/Delete2.png}
+    \caption{Caption}
+    \label{fig:delete_sample}
+\end{figure}
+In the above graph[\ref{fig:delete_sample}] the Optimal Path before deletion was $S \rightarrow R \rightarrow D$, when we delete the edge $S \rightarrow R$, the Optimal Path changes to $S \rightarrow M \rightarrow R \rightarrow D$.\\
 Below we prove some important properties that holds when we remove edges from graph. The following properties holds when we have the Optimal Path for the graph before deletions.\\
 \\
 \hypertarget{Lemma 6}{\textbf{Lemma 6:}} \textit{Deletion of edge $ u \rightarrow v$ where $u \in V$ and $v \in V$ can not decrease $f(v)$.}\\
@@ -278,19 +286,26 @@ Instead of deleting edges one by one we process deletion in batches, where a bat
     
     \item We repeat step 1 and 2 until update\_list is empty.
 \end{enumerate}
-Optimal Cost is least cost of reaching the node but we increase the cost of child at step 2 in above procedure, why we do that is because from \hyperlink{Lemma 6}{\textit{Lemma 6}} we know that $f$ might increase due to deletion of edges and we need to propagate the updated higher cost. Also since there is no special ordering of nodes to execute the propagation it may happen that while we propagating for a node its sub-graph might already have been updated so to make sure we have latest cost value among those, we choose the least cost parent and then propagate that cost downwards if applicable.\\ 
-\begin{center}
-\includegraphics[scale=0.45]{img/Delete1.png}    
-\end{center}
-In above example the Optimal Path before deletion is $S \rightarrow M \rightarrow O \rightarrow P \rightarrow R \rightarrow D $.
+Optimal Cost is least cost of reaching the node but we increase the cost of child at step 2 in above procedure, why we do that is because from \hyperlink{Lemma 6}{\textit{Lemma 6}} we know that $f$ might increase due to deletion of edges and we need to propagate the updated higher cost. Also since there is no special ordering of nodes to execute the propagation it may happen that while we propagating for a node its sub-graph might already have been updated so to make sure we have latest cost value among those, we choose the least cost parent and then propagate that cost downwards if applicable.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{img/Delete1.png}
+    \caption{Caption}
+    \label{fig:delete_multiple}
+\end{figure}
+
+In above example[\ref{fig:delete_multiple}] the Optimal Path before deletion is $S \rightarrow M \rightarrow O \rightarrow P \rightarrow R \rightarrow D $.
 The edges $ M \rightarrow O$ and $P \rightarrow R$ are deleted from graph. So $R,O \in $ update\_list, While propagating for $O$ we might find $R$ again from path $O \rightarrow R$ but $R$ has already updated, if in that update $R$ has chosen path $S \rightarrow M \rightarrow O \rightarrow R$ as its Optimal Path then we have stale value for $f(R)$ as $M \rightarrow O$ is deleted but since $R$'s update happened first it read the stale value before propagation. In such cases we need to find the parent with least cost thus we compute the cost of reaching node from all its parent and choose the parent with least cost as optimal\_parent.
 
 \subsection{Deletion and Cycles}
 We propagate the deletions so that each node whose cost is already computed will have the latest value. There is a special case of deletions with cycle where even after propagation we can get stale value if we don't perform  certain checks while propagating latest value to nodes. as given in example below:
-\begin{center}
-\includegraphics[scale=0.45]{img/cycle.png}        
-\end{center}
-In The above example the Optimal Path is from $S \rightarrow ABCD \rightarrow E$,where $S$ is source and $E$ is destination. When we remove the edge $A \rightarrow B$, and recompute the $f(B)$, there exist only one parent $D$ so the $f(B)_{new}$ is computed by $f(B)_{new} = g(D) + 2 + h(B)$, which is old value of $g(D)$, as we remove $A \rightarrow B$, there is no path from $S \rightarrow D$ so $g(D)_{new}$ is $\infty$, but we never arrive at that proposition because in propagation of deletion we will propagate from $B$  and $f(D)$ will be updated based on stale value of $f(B)$ and thus we have wrong cost value after deletion of such edges. The main reason this happens is die to the fact that cost $f(D)$ is computed wrt $B$ as $B \in OptimalPath(S,D)$. To avoid such cases, while chosing the optimal\_parent we have to eliminate the parents whose Optimal\_ancestor is current node.\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.45]{img/cycle.png}
+    \caption{Caption}
+    \label{fig:delete_cycle}
+\end{figure}
+In the above example[\ref{fig:delete_cycle}] the Optimal Path is from $S \rightarrow ABCD \rightarrow E$,where $S$ is source and $E$ is destination. When we remove the edge $A \rightarrow B$, and recompute the $f(B)$, there exist only one parent $D$ so the $f(B)_{new}$ is computed by $f(B)_{new} = g(D) + 2 + h(B)$, which is old value of $g(D)$, as we remove $A \rightarrow B$, there is no path from $S \rightarrow D$ so $g(D)_{new}$ is $\infty$, but we never arrive at that proposition because in propagation of deletion we will propagate from $B$  and $f(D)$ will be updated based on stale value of $f(B)$ and thus we have wrong cost value after deletion of such edges. The main reason this happens is die to the fact that cost $f(D)$ is computed wrt $B$ as $B \in OptimalPath(S,D)$. To avoid such cases, while chosing the optimal\_parent we have to eliminate the parents whose Optimal\_ancestor is current node.\\
 \begin{lstlisting}[language=python, caption=Check Cycles]
 procedure: check_cycle(node,parent):
     current_node = node
@@ -303,11 +318,15 @@ procedure: check_cycle(node,parent):
 \end{lstlisting}
 
 \subsection{Parallel Deletion and Cycle}
-When there are multiple deletions happening at same time, there can be cycle of optimal\_parent, and thus when we do the above check, we get into an infinite loop also we defined optimal\_parent as a non cyclic path to start node. To eliminate such cycle when we process deletion we have to do additional processing of removing such cycles.\\
-\begin{center}
-\includegraphics[scale=0.45]{img/Delete_cycle.png}        
-\end{center}
-In the example graph given above, the Optimal Path from $S\rightarrow D$ is $SABCD$,when we delete edges $A \rightarrow B$ and $G \rightarrow F$,for node $B$ the new parent is $I$ as $B \notin optimal\_parents(I)$, also the new parent of $F$ becomes $E$ as $E \notin optimal\_parents(F)$ this is because we are checking for optimal\_parent for both nodes in parallel thus the check happens at the same time and both reads the optimal\_parent values before it gets changed by either one of them. Thus forming a cycle of optimal\_parents which violates our definition of optima\_parent, to solve this we perform additional cycle check after each iteration of propagation for deletion and if such cycle found we remove them.\\
+When there are multiple deletions happening at same time, there can be cycle of optimal\_parent, and thus when we do the above check, we get into an infinite loop also we defined optimal\_parent as a non cyclic path to start node. To eliminate such cycle when we process deletion we have to do additional processing of removing such cycles.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.45]{img/Delete_cycle.png}
+    \caption{Caption}
+    \label{fig:delete_parallel_cycle}
+\end{figure}
+
+In the example graph[\ref{fig:delete_parallel_cycle}] given above, the Optimal Path from $S\rightarrow D$ is $SABCD$,when we delete edges $A \rightarrow B$ and $G \rightarrow F$,for node $B$ the new parent is $I$ as $B \notin optimal\_parents(I)$, also the new parent of $F$ becomes $E$ as $E \notin optimal\_parents(F)$ this is because we are checking for optimal\_parent for both nodes in parallel thus the check happens at the same time and both reads the optimal\_parent values before it gets changed by either one of them. Thus forming a cycle of optimal\_parents which violates our definition of optima\_parent, to solve this we perform additional cycle check after each iteration of propagation for deletion and if such cycle found we remove them.\\
 Now the question arises to remove which newly formed edge of the cycle i.e remove $I= $optimal\_parent($B$) or remove $E=$ optimal\_parent($F$). which one belongs to the optimal path? the answer is we can just remove any of cycle edges and our propagation algorithm will take care of which edge actually belong to the cycle.\\
 
 %explain HOW
@@ -369,11 +388,14 @@ procedure: expand(update_list,s,flag):
 \\
 \textbf{Claim:} \textit{At the end of propagation $f(destination)$ might not be the optimal cost of reaching destination from source in new graph. }\\
 \textbf{Proof:}
-\begin{center}
+\begin{figure}[H]
+    \centering
     \includegraphics[scale=0.4]{img/del_prop.png}
-\end{center}
+    \caption{Caption}
+    \label{fig:deletion_proof}
+\end{figure}
 To prove, It is sufficient to give an example where $f(destination)$ is not the optimal cost after propagation for deletion.\\
-In above graph at end of A* we will have:\\
+In above graph[\ref{fig:deletion_proof}] at end of A* we will have:\\
 open\_list : \{2,3\}\\
 closed\_list : \{S,1,D\}\\
 Thus node 4 is not visited thus having $f(4)=\infty$, after propagation for deletion as D has only one parent 4 its cost is computed wrt 4 so $f(D)=\infty$, but int the new graph the optimal cost is $f(D)=13$ with Optimal\_Path $S\rightarrow 1\rightarrow 3 \rightarrow 4 \rightarrow D$.\\
@@ -412,19 +434,24 @@ We have designed the propagation of Insertion( section 4) and propagation of del
 
 \subsubsection{Insert-Delete Cycle}
 Since we have insertions and deletions propagating at same time, If we don't perform enough checks we can get into cycles for certain cases. 
-\begin{center}
-\includegraphics[scale=0.45]{img/ins_del_cycle.png}        
-\end{center}
-In the example graph given above we remove $A \rightarrow B$ and insert $F \rightarrow B$, Due to deletion $f(B) = \infty$, when we propagate for edge $F \rightarrow B$,the cost of reaching $B$ from $F$ via newly added edge is less than infinity thus, we compute the new cost and make optimal\_parent($B$) = $F$,But when we try to to retrace the path from $F$ to $S$ we get $F\rightarrow E\rightarrow C\rightarrow B\rightarrow F...$ thus we have a optimal\_parent cycle. It is because the cost of $F$ itself is a stale value due to the fact that its cost is computed wrt to $B$ and deleted edge $A \rightarrow B$. To remove such cases we have to extensively check for insertion of edges $u \rightarrow v$, if $v \in $optimal\_parents($u$) for all insertions.\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.45]{img/ins_del_cycle.png}
+    \caption{Caption}
+    \label{fig:insert_delete_cycle}
+\end{figure}
+In the example graph[\ref{fig:insert_delete_cycle}] given above we remove $A \rightarrow B$ and insert $F \rightarrow B$, Due to deletion $f(B) = \infty$, when we propagate for edge $F \rightarrow B$,the cost of reaching $B$ from $F$ via newly added edge is less than infinity thus, we compute the new cost and make optimal\_parent($B$) = $F$,But when we try to to retrace the path from $F$ to $S$ we get $F\rightarrow E\rightarrow C\rightarrow B\rightarrow F...$ thus we have a optimal\_parent cycle. It is because the cost of $F$ itself is a stale value due to the fact that its cost is computed wrt to $B$ and deleted edge $A \rightarrow B$. To remove such cases we have to extensively check for insertion of edges $u \rightarrow v$, if $v \in $optimal\_parents($u$) for all insertions.
 
 \subsubsection{Propagation Cycle}
-Since Insertions and Deletions are propagating at same if there is cycle and each the reach the cycle at diff iterations, It might happen due to structure of graph that they propagate indefinitely on such cycles if the check mentioned in the above section is not implemented for each insertion.  
+Since Insertions and Deletions are propagating at same if there is cycle and each the reach the cycle at diff iterations, It might happen due to structure of graph that they propagate indefinitely on such cycles if the check mentioned in the above section is not implemented for each insertion.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.45]{img/prop_cycle.png}
+    \caption{Caption}
+    \label{fig:propogation_cycle}
+\end{figure}
 
-\begin{center}
-\includegraphics[scale=0.45]{img/prop_cycle.png}        
-\end{center}
-
-In the example above $A \rightarrow B$ is deleted and $E \rightarrow F$ is added. Due to deletion cost of $B = \infty$  and due to insertion cost of $F$ is changed in next iteration cost of $C = \infty$ as there is no path from $S \rightarrow C$ in new graph, also due to edge $f \rightarrow B$ the cost of $B$ is changed as the new cost is less than $\infty$. In the next iteration cost of $E = \infty$ and cost of $C$ is changed ,Similarly in next iteration cost of $F = \infty$ and cost of $E$ is changed, and similarly the propagation goes on the loop indefinitely. The problem here is we computed cost of $B$ from $F$ when $F$ has the stale value and its cost is computed wrt $B$ itself. This can be removed by doing check mentioned in above section 4.2.1. 
+In the example[\ref{fig:propogation_cycle}] above $A \rightarrow B$ is deleted and $E \rightarrow F$ is added. Due to deletion cost of $B = \infty$  and due to insertion cost of $F$ is changed in next iteration cost of $C = \infty$ as there is no path from $S \rightarrow C$ in new graph, also due to edge $f \rightarrow B$ the cost of $B$ is changed as the new cost is less than $\infty$. In the next iteration cost of $E = \infty$ and cost of $C$ is changed ,Similarly in next iteration cost of $F = \infty$ and cost of $E$ is changed, and similarly the propagation goes on the loop indefinitely. The problem here is we computed cost of $B$ from $F$ when $F$ has the stale value and its cost is computed wrt $B$ itself. This can be removed by doing check mentioned in above section 4.2.1. 
 
 \begin{lstlisting}[language=python, caption=Propagation of Updates]
 procedure: propagate_updates( list< pair<u,v> > Deletions,list< pair<u,v> > Inserts, E, N):
@@ -472,29 +499,263 @@ procedure: expand(update_list,s,flag):
 
 \section{Experimental Results}
 %results
+%setup and GPU specs
+In this section we have compared the performance of our algorithm with multiple GPU A* algorithm. We also discuss how various parameters affect the performance of our algorithm. The GPU we used the experiments is a Tesla K40c which has 15 SM each having 192 cores(total 2880 cores), it has 3.17 GB of Global Memory and has clock rate of 740 MHz.\\
+The performance of GPU A*(GA*)\cite{GA*} is dictated by the expansion of nodes simultaneously which is restricted by how many parallel priority queues are created. As we increase the number of priority queues the execution time decreases because we process more number of nodes in parallel. The trend follows as shown Figure[\ref{fig:runtime_K}].
 
-The performance of GA* \cite{GA*} is dictated by how much parallelism we can create i.e number of parallel threads that we can spawn which is equal to the number of priority queues (K). As the we increase the number of priority queues the execution time decreases because we get benefited from GPU's SIMD architecture. The trend follows as shown in graph below.
-\begin{center}
-\includegraphics[scale=0.45]{img/RvK.png}        
-\end{center}
-For Insertion only the amount of processing required is directly proportional to the number edges inserted in graph. As we increase the number of edges inserted the execution time increase, Its not a steady increase because the probability that a node is getting updated due to multiple propagation increases thus the contention at lock of that node increases slowing the execution time.
-\begin{center}
-\includegraphics[scale=0.45]{img/IvK.png}        
-\end{center}
-Similarly for deletion as deletion size increases we need to process more nodes,and contention at lock also increases thus increasing the execution time, as shown in graph below.
-\begin{center}
-\includegraphics[scale=0.45]{img/DvT.png}        
-\end{center}
-In dynamic setting when we process both insertion and deletion at same time, the amount of execution time needed to process deletion is much larger than inserts. As shown in below graph where the total number of updates are kept constant but the amount of updates which are insertion or deletion is changed we see that there is a drastic drop in execution time as the percentage of deletion becomes 0. It shows that even for small amount of deletion the execution time is high compared to insertions. It is because we are performing multiple checks for cycle when we process deletion which takes a major amount of execution time, while in insertion there is no need to check for cycle when we are doing separate propagation.\\
-\begin{center}
-\includegraphics[scale=0.45]{img/IDvK.png}        
-\end{center}
-The method we proposed for handling insertion and deletion rather than re-doing A* from beginning is much faster then later. The below two graph shows how execution time varies when we increase the number of queries ( finding path from source to destination after some update ) increases. Performing  GA* after each set of updates is almost linear but propagating the updates as described in above sections takes considerably less amount of execution time. The speed up we can get is proportional to the number of queries we preform, as the number of queries increases we get better and better speed up. In the graph shown below the graph on left side updates only consist of \textit{inserts} while the graph on right has update consisting of both insertion and deletion. In the graph on right we can infer that when number of queries is 1 multiple GA* perform better than Dynamic A* but as we increase the number of queries Dynamic A* perform better than multiple GA*.
-\begin{center}
-\includegraphics[scale=0.36]{img/TvQ_wikitalk.png}        
-\includegraphics[scale=0.36]{img/QvT_dyn.png} 
-\end{center}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.50\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/RvK.png}
+        \caption{Execution Time vs Number of Parallel Priority Queues}
+        \label{fig:runtime_K}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/IDvK.png}
+        \caption{Execution Time vs Edge density}
+        \label{fig:edge_dens}
+    \end{subfigure}
+    \caption{}
+\end{figure}
+When the graph is only subjected to the insertion of edges, the amount of processing required to find the new optimal path is based on how many nodes are being affected ( cost change ) due to the insertions, which generally increases as we increase the number of edges being inserted. The Figure[\ref{fig:insert_trend}] shows the increase in execution time, we can also infer that the increase is linear for certain part of in each sub-figure. In Figure[\ref{fig:insert_trend_3}] there is a dip then rise, it is because initially the destination node was unreachable so it has to process all and as we inserted edges the path is created and it became shorter then after a while due to increase in number of edges the size of the graph grew as well as the number of nodes being updated simultaneously increase so contention for lock increases thus increasing the execution time.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/ins/i3.png}
+         \caption{}
+         \label{fig:insert_trend_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/ins/i1.png}
+         \caption{}
+         \label{fig:insert_trend_2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/ins/i2.png}
+         \caption{}
+         \label{fig:insert_trend_3}
+    \end{subfigure}
+    \caption{Execution time when graph is only subjected to Insertions }
+    \label{fig:insert_trend}
+\end{figure}
 
+Similarly for deletion as deletion size increases we need to process more nodes,and contention at lock also increases thus increasing the execution time, as shown in Figure[\ref{fig:deletion_trend}]. We also observe that there are certain points where the execution time increase drastically in each Figure [\ref{fig:deletion_trend_1}] [\ref{fig:deletion_trend_2}] [\ref{fig:deletion_trend_3}], It might be due to sudden increase in number of edges i.e $(u \rightarrow v)$ deleted which are part of optimal path to the node $v$, which increase the amount of processing required.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/del/d1.png}
+         \caption{}
+         \label{fig:deletion_trend_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/del/d2.png}
+         \caption{}
+         \label{fig:deletion_trend_2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/del/d3.png}
+         \caption{}
+         \label{fig:deletion_trend_3}
+    \end{subfigure}
+    \caption{Execution time when graph is only subjected to Deletions}
+    \label{fig:deletion_trend}
+\end{figure}
+
+In dynamic setting when we process both insertion and deletion at same time. With increase in number of Updates the execution time increases as in Figure[\ref{fig:dynamic_trend}]. We can also observe that the sub-figures looks more similar to that in only deletion, which is explained later below in more detail.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/dyn/u1.png}
+         \caption{}
+         \label{fig:dynamic_trend_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/dyn/u2.png}
+         \caption{}
+         \label{fig:dynamic_trend_2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/dyn/u3.png}
+         \caption{}
+         \label{fig:dynamic_trend_3}
+    \end{subfigure}
+    \caption{Execution time vs Number of Updates}
+    \label{fig:dynamic_trend}
+\end{figure}
+The amount of execution time needed to process deletion is much larger than inserts. As shown in below Figure[\ref{fig:runtime_ins_del}] where the total number of updates are kept constant but the amount of updates which are insertion or deletion is changed we observe that there is a drastic drop in execution time as the percentage of deletion becomes 0. It shows that even for small amount of deletion the execution time is high compared to insertions. It is because we are performing multiple checks for cycle when we process deletion which takes a major amount of execution time, while in insertion there is no need to check for cycle when we are doing separate propagation.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.44\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/IDvK.png}
+        \caption{Run Time vs \% Insert/Delete}
+        \label{fig:runtime_ins_del}
+    \end{subfigure}
+     \hfill
+    \begin{subfigure}[b]{0.50\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/propagation_method.png}
+        \caption{Different version of DA* propagation}
+        \label{fig:DA_version}
+    \end{subfigure}
+   \caption{}
+    
+\end{figure}
+
+Here we compare the performance of our algorithm than by doing GPU A* repeatedly.The below Figure[\ref{fig:query_trend}] shows how execution time varies when we increase the number of queries ( finding path from source to destination after some update ) increases. Performing  GA* after each set of updates is almost linear but propagating the updates as described in above sections takes considerably less amount of execution time. The speed up we can get is proportional to the number of queries we preform, as the number of queries increases we get better and better speed up. In the Figure[\ref{fig:query_trend_ins}] updates only consist of \textit{inserts} while the Figure[\ref{fig:query_trend_dyn}] consisting of both insertion and deletion. In the Figure[\ref{fig:query_trend_dyn}] we can infer that when number of queries is 1 multiple GA* perform better than Dynamic A* but as we increase the number of queries Dynamic A* perform better than multiple GA*. The speedup we get by applying our algorithm is proportional the number of queries ( updates ) graph is subjected to, we also have seen increase in speedup as the size (nodes,edges) of graph increases.To test the capability of our algorithm we used real world temporal graphs and networks taken from SNAP\cite{SNAP}, results shown in table[\ref{tab:comparison}]. We got 37x speedup for 100 queries.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.47\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/TvQ_wikitalk.png}
+         \caption{Only Insertions}
+         \label{fig:query_trend_ins}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+         \includegraphics[width=\textwidth]{img/QvT_dyn.png}
+         \caption{Both Insertions and Deletions}
+         \label{fig:query_trend_dyn}
+    \end{subfigure}
+    \caption{Execution Time vs Number of Queries}
+    \label{fig:query_trend}
+\end{figure}
+
+\captionof{table}{Comparison of DA* with repeated GA* ( Time in seconds)} \label{tab:comparison}
+\begin{tabular}{ |c|c|c|c|c|c|c|c| } 
+ \hline
+ No. & Graph & N & E & Queries & DA* & repeated GA* & speedup \\ 
+ \hline
+ 1 & live-journal & 3,997,962 &	34,681,189 & 10	& 6.01 & 33.93 & 5x\\
+ \hline
+ 2 & wiki-talk & 1140149 & 7833140 & 10 & 12.24 & 24.84 & 2x\\
+ \hline
+ 3 & ask-Ubuntu & 159,316 &	964,437 & 10 & 0.25	 & 1.31 & 5x\\
+ \hline
+ 4 & YouTube & 1,157,828 & 2,987,624 & 10 & 0.81 &	5.78 & 7x\\
+ \hline
+ 5 & math-overflow &	24,818	& 506,550	& 10 & 0.09 & 0.67 & 7x\\
+ \hline
+ 6 & superuser & 194,085 & 1,443,339 & 10 &	0.41 & 2.89 & 7x\\
+ \hline
+ 7 & live-journal &	3,997,962 & 34,681,189	& 100 &	11.41 &	424.06  & 37x\\
+ \hline
+\end{tabular}
+
+\section{Applications}
+In this section we will discuss how our algorithm can be applied to problems with different characteristics which uses A* to solve the problem.
+\subsection{Wireless Sensor Networks}
+Wireless sensor network(WSN) are group of spatially dispersed and dedicated sensors(sensor nodes) for monitoring and recording the physical conditions of the environment and organizing the collected data at a central location(base station). WSNs measure environmental conditions like temperature, sound, pollution levels, humidity, wind etc. Sensor nodes are deemed to be resource constrained in terms of energy, communication range, memory capacity and processing capability. Sensor nodes are also light-weight, low power and are operated by a small battery. The energy they lose is proportionate to the distance of communication. There is no way to recharge these batteries in most of cases. Generally in routing algorithm, the best path is chosen for transmission of data from source to destination. Over the period of time, if same path is chosen for all communications in order to achieve better performance in terms of quick transmission time, then those nodes which are on this path will get drained faster.\\
+There are many routing algorithms which try to increase the lifetime of the network like SPIN-EC \cite{SPIN-EC}, LNDIR \cite{LNDIR}, S. AlShawi et.al \cite{WSNfuzzy} proposed a fuzzy A* algorithm to increase the lifetime of network, Keyur Rana and Mukesh Zaveri \cite{WSN2011} proposed another algorithm which uses A* to find the best route while taking account of the residual energy at each node. Ali Ghaffari \cite{WSN2014} proposed Energy Efficient Routing Protocol (EERP) which uses A* with cost of node dependent on energy, packets transmitted or received and buffer available at the node.\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.35]{img/network.png}
+    \caption{Energy-efficient data forwarding in wireless sensor networks\cite{WSN2014}}
+    \label{figex_network}
+\end{figure}
+The Energy associated with a sensor nodes are constantly changing as packets are received by that node, thus modifying the edge weights of the network. So after each round A* is performed to find the energy efficient path to the Base station. Our algorithm can eliminate applying A* again and again, as we can simulate the weight change as deletion of that edge and then insertion of the same edge with new weight. To show this and evaluate the performance gain we implemented EERP \cite{WSN2014} and instead of doing repeated A* we used our DA* to find the optimal path.\\
+In EERP \cite{WSN2014} author proposed scheme where the value of
+function $f(x)$ is equal to the node cost of node n, and the intention is to forward data packets to the next neighbour node which has higher residual energy, higher free buffer, and higher packet reception rate. To achieve this, they made use of aggregated weight of the above-mentioned routing parameters.They define the aggregated weight of a next neighbour node as the sum of normalized weights of its routing metrics as follows:\\
+$g(n) = M\text{in}(\alpha(\frac{E_{ini}(n)}{E_{res}(n}) + \beta(\frac{N_t(n)}{N_r(n)}) + \gamma(\frac{B_{ini}(n)}{B_f(n)}) )$\\
+Where $E_{res}(n)$ and $E_{ini}(n)$ are residual and initial energy of node n respectively, $N_r(n)$ and $N_t(n)$  are the number of transmitted and received packets respectively, $B_f(n)$ and $B_{ini}(n)$ referred to the number of free and initial buffer of node $n$ respectively, $\alpha$, $\beta$ and $\gamma$ are weight parameters and $\alpha + \beta + \gamma = 1$.\\
+And the value of $h(n)$ function can be calculated as $h(n) = \frac{d(n,s)}{a\text{vg}(d(n,j))}$, Where $d(n,s)$ is the distance between the node and sink node and $a\text{vg}(d(n,j))$ is the average distance between the node $n$ and its one hop neighbouring nodes$(j)$.\\
+To build the routing table authors\cite{WSN2011} proposed algorithm where A* is performed for each node to find the best path to sink, after each round.
+\begin{lstlisting} [language=C, caption=Pseudo Code for Proposed Efficient Routing Algorithm\cite{WSN2011}]
+Input: Sensor Network
+Output : Life of Sensor Network in terms of rounds
+BEGIN
+    InitilizeNetwork()
+    EstimateDistance()              // finds distance to the sink
+    WHILE NOT END_ASTAR()           // N-of-N metric [11]
+        InitializeSolArray()        // initialize solution
+                                    //array to store routing schedule
+        FOR each node i in the Network DO
+            CreateTree (i)          //using A-Star algorithm
+            PrepareSolArray()       //prepare routing schedule
+        END FOR
+        BroadcastSolution()        // BS broadcasts routing schedule
+        UpdateEnergy()               //Energy update for relay nodes
+        CountRound = CountRound + 1  //count n/w life
+    END WHILE
+    PRINT CountRound                //print n/w lifetime in
+END
+\end{lstlisting}
+Instead of performing A* for each node to find the path, we take the idea from D*\cite{original D*} where to find the path the search start from destination node towards the source node. So to find paths to all node our we start A* from sink node and end when we have visited all nodes. After BroadCastSolution() we UpdateEnergy() and then add all those edges to update\_list whose weights are modified and then on it we apply  our propagation methods described in above sections to find the optimal\_path and thus forming new routing table at base station.
+\begin{lstlisting}[language=C, caption=Pseud Code with DA* integerted, label=WSNDA]
+Input: Sensor Network
+Output : Life of Sensor Network in terms of rounds
+BEGIN
+    InitilizeNetwork()
+    EstimateDistance()          // finds distance to the sink
+    InitializeSolArray()         //array to store routing schedule
+    
+    ASTAR_From_Sink()          //finds path to all nodes from sink
+    BroadcastSolution()        // BS broadcasts routing schedule
+    UpdateEnergy()               //Energy update for relay nodes
+    CountRound = CountRound + 1
+    
+    WHILE NOT END_ASTAR()
+        Create_UpdateList()   //list of edges whose weight is changed
+        Propagation()         //Propagate change using methods of DA*  
+        Update_SolArray()     //Update routing table with new path
+        BroadcastSolution()         // BS broadcasts routing schedule
+        UpdateEnergy()             //Energy update for relay nodes
+        CountRound = CountRound + 1
+    END WHILE
+    PRINT CountRound                //print n/w lifetime 
+END
+\end{lstlisting}
+The energy consumption model of the EERP\cite{WSN2014}, the authors used the first order radio model which is the typical model in the area of routing protocol evaluation in WSN\cite{WSN_energy}. According to this model, the energy consumed for tranmitting and receiving k-bit data can be calculated as follows\cite{WSN_energy}:\\
+$E_{Tx}(k) = k (E_{elec} + \epsilon_{amp}.d^2)$\\
+$E_{Rx}(k) = k.E_{elec} $\\
+$E_T(k) = E_{Tx}(k) + E_{Rx}(k) = k(2E_{elec} +\epsilon_{amp}.d^2)$\\
+\\
+Here we compare the life expectancy of network and performance of algorithms EERP\cite{WSN2014}, A*\cite{A*}, DA* for routing the packets in WSN. All algorithms are implemented in CUDA and ran on Tesla K40c a keepler based GPU with 15 SMs and 192 SP per SM for a total of 2880 SPs.
+%result and graphs
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.47\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{img/bar_chart1.png}
+         \caption{Network Lifetime Comparison }
+         \label{fig:wsn_life}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+         \includegraphics[width=\textwidth]{img/bar_chart2.png}
+         \caption{}
+         \label{fig:wsn_runtime}
+    \end{subfigure}
+    \caption{}
+    \label{fig:query_trend}
+\end{figure}
+
+
+
+%Our DA* boost the runtime of EERP by 30x.
+
+\subsection{Path Finding and Mazes}
 
 
 \section{Related Work}
@@ -503,7 +764,9 @@ D*\cite{original D*}, focused D*\cite{focused D*} and D* lite\cite{D* Lite} are 
 
 \section{Conclusion and Future Work}
 We have proposed algorithm which can efficiently find optimal path with the help of heuristics on GPU while taking account for updates in form of insertion and deletions with time. Our algorithm is faster than doing repeated A* on GPU from scratch. We also found that insertions takes less time to process than deletion. And due to the fact that both insertion and deletion requires different set of instruction to process, separate propagation outperforms simultaneous propagation.\\
-In future the possibility of Dynamic A* in multi-GPU environment can also be explored. There can be algorithmic development in dynamic bi-directional A* on GPU. \newpage
+In future the possibility of Dynamic A* in multi-GPU environment can also be explored. There can be algorithmic development in dynamic bi-directional A* on GPU.
+
+%\newpage
 \begin{thebibliography}{} 
     \bibitem{A*} Hart, P.; Nilsson, N.; Raphael, B. (1968), "A Formal Basis for the Heuristic Determination of Minimum Cost Paths", IEEE Trans. Syst. Science and Cybernetics
     \bibitem{original D*}Stentz, Anthony (1994), "Optimal and Efficient Path Planning for Partially-Known Environments", Proceedings of the International Conference on Robotics and Automation
@@ -517,12 +780,19 @@ In future the possibility of Dynamic A* in multi-GPU environment can also be exp
     \bibitem{Giuseppe}Giuseppe F. Italiano: Dynamic Graph Algorithms.
     \bibitem{Wiki A*}\texttt{https://en.wikipedia.org/wiki/A*\_search\_algorithm}
     \bibitem{Wiki D*}\texttt{https://en.wikipedia.org/wiki/D*}
+    \bibitem{SNAP}\texttt{http://snap.stanford.edu/data/index.html}
+    \bibitem{WSN2011}K. Rana and M. Zaveri, "A-star algorithm for energy efficient routing in wireless sensor network," in Trends in Network and Communications, ed: Springer, 2011.
+    \bibitem{WSN2014}Ali Ghaffari, "An Energy Efficient Routing Protocol for Wireless Sensor Networks using A-star Algorithm", Journal of applied research and techonology 2014.
+    \bibitem{WSNfuzzy}I. S. AlShawi, L. Yan, W. Pan, and B. Luo, "Lifetime enhancement in wireless sensor networks using fuzzy approach and A-star algorithm," Sensors Journal, IEEE, vol. 12,2012.
+    \bibitem{SPIN-EC}J. Kulik, W.R. Heinzelman, H. Balakrishnan: Negotiation–Based Protocols for Disseminating Information in Wireless Sensor Networks. In: Wireless Networks, Vol 8, 2002.
+    \bibitem{LNDIR}Muhammad K Shahzad1, Dang Tu Nguyen, Vyacheslav Zalyubovskiy, "LNDIR: A lightweight non-increasing delivery-latency interval-based routing for duty-cycled sensor networks", International Journal of Distributed Sensor Networks 2018, Vol. 14(4).
+    \bibitem{WSN_energy}W. R. Heinzelman, A. Chandrakasan, and H.Balakrishnan, "Energy-efficient communication protocol for wireless microsensor networks," in System Sciences, 2000. Proceedings of the 33rd Annual Haw iiInternational Conference on, 2000.
     
-\end{thebibliography}
+  
+\end{thebibliography} 
 
-
-% All reduce Graphs
-\newpage 
+%All reduce Graphs
+%\newpage 
     \section{Appendix} 
     \subsection{Heuristics in A*}
      Performance of A* depends heavily on the type of heuristics which is used. It guides the search to reach destination faster,but wrong values can also lead to slower or a path which is not the shortest path.
